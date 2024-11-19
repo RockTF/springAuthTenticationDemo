@@ -2,7 +2,6 @@ package com.altimetrik.ee.demo.controller;
 
 import com.altimetrik.ee.demo.bean.PairedComponentDetailsBean;
 import com.altimetrik.ee.demo.service.ComponentDetailsService;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

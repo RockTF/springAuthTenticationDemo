@@ -1,10 +1,11 @@
 package com.altimetrik.ee.demo.entity;
 
 import jakarta.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Entity
+@Table(name = "user")
 public class User {
 
   @Id
@@ -22,6 +23,8 @@ public class User {
   private String password;
 
   @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+  @Enumerated(EnumType.STRING)
   List<Role> roles;
 
   public Integer getId() {

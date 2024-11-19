@@ -3,10 +3,15 @@ package com.altimetrik.ee.demo.security;
 import com.altimetrik.ee.demo.entity.User;
 import com.altimetrik.ee.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MyUserDetails implements UserDetailsService {
@@ -22,15 +27,9 @@ public class MyUserDetails implements UserDetailsService {
       throw new UsernameNotFoundException("User '" + username + "' not found");
     }
 
-    return org.springframework.security.core.userdetails.User//
-        .withUsername(username)//
-        .password(user.getPassword())//
-        .authorities(user.getRoles())//
-        .accountExpired(false)//
-        .accountLocked(false)//
-        .credentialsExpired(false)//
-        .disabled(false)//
-        .build();
-  }
+    List<GrantedAuthority> authorities = user.getRoles().stream().map(authority -> new
+            SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toList());
+    return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
 
+  }
 }

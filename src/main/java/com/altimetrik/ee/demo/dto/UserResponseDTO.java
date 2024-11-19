@@ -1,20 +1,23 @@
 package com.altimetrik.ee.demo.dto;
 
 import com.altimetrik.ee.demo.entity.Role;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
 public class UserResponseDTO {
 
-  @ApiModelProperty(position = 0)
+  @Schema(description = "Unique identifier of the user", example = "1")
   private Integer id;
-  @ApiModelProperty(position = 1)
+
+  @Schema(description = "Username of the user", example = "john_doe")
   private String username;
-  @ApiModelProperty(position = 2)
+
+  @Schema(description = "Email address of the user", example = "john.doe@example.com")
   private String email;
-  @ApiModelProperty(position = 3)
-  List<Role> roles;
+
+  @Schema(description = "Roles assigned to the user", example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
+  private List<Role> roles;
 
   public Integer getId() {
     return id;
