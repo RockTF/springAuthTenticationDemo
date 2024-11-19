@@ -12,8 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableScheduling
 @SpringBootApplication()
-@PropertySources({ @PropertySource(value = "classpath:db-config.properties"),
-		@PropertySource(value = "classpath:${k8s.db.env}.properties", ignoreResourceNotFound = true) })
 public class Application {
 
 	private static ConfigurableApplicationContext context;

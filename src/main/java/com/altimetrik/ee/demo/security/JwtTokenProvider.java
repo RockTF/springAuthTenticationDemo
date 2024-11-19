@@ -7,6 +7,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -37,28 +41,34 @@ public class JwtTokenProvider {
   @Value("${security.jwt.token.expire-length}")
   private long validityInMilliseconds; // 1h
 
+  private Key signingKey;
+
   @Autowired
   private MyUserDetails myUserDetails;
 
   @PostConstruct
   protected void init() {
-    secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+    this.signingKey = Keys.hmacShaKeyFor(keyBytes); // Генерація ключа
   }
 
   public String createToken(String username, List<Role> roles) {
 
     Claims claims = Jwts.claims().setSubject(username);
-    claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
+    claims.put("auth", roles.stream()
+            .map(s -> new SimpleGrantedAuthority(s.getAuthority()))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList()));
 
     Date now = new Date();
     Date validity = new Date(now.getTime() + validityInMilliseconds);
 
-    return Jwts.builder()//
-        .setClaims(claims)//
-        .setIssuedAt(now)//
-        .setExpiration(validity)//
-        .signWith(SignatureAlgorithm.HS256, secretKey)//
-        .compact();
+    return Jwts.builder()
+            .setClaims(claims)
+            .setIssuedAt(now)
+            .setExpiration(validity)
+            .signWith(signingKey, SignatureAlgorithm.HS256)
+            .compact();
   }
 
   public Authentication getAuthentication(String token) {
