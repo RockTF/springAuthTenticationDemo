@@ -1,12 +1,6 @@
 package com.altimetrik.ee.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.List;
 
