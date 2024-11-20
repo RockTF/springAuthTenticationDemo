@@ -12,7 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class UserService {
@@ -31,8 +31,9 @@ public class UserService {
 
   public String signIn(String username, String password) {
     try {
+      User user = getUserByName(username);
       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-      return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getRoles());
+      return jwtTokenProvider.createToken(username, user.getRoles());
     } catch (AuthenticationException e) {
       throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -51,7 +52,7 @@ public class UserService {
 
 
   public User search(String username) {
-    User user = userRepository.findByUsername(username);
+    User user = getUserByName(username);
     if (user == null) {
       throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
     }
@@ -59,11 +60,17 @@ public class UserService {
   }
 
   public User findCurrentUser(HttpServletRequest req) {
-    return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
+    return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)))
+            .orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
   }
 
   public String refresh(String username) {
-    return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getRoles());
+    User user = getUserByName(username);
+    return jwtTokenProvider.createToken(username, user.getRoles());
+  }
+
+  private User getUserByName(String username) {
+    return userRepository.findByUsername(username).orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
   }
 
 }

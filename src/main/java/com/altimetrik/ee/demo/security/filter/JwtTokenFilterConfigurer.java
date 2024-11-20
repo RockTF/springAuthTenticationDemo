@@ -1,5 +1,6 @@
-package com.altimetrik.ee.demo.security;
+package com.altimetrik.ee.demo.security.filter;
 
+import com.altimetrik.ee.demo.security.JwtTokenProvider;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;

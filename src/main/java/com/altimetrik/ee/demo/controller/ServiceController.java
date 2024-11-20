@@ -2,7 +2,10 @@ package com.altimetrik.ee.demo.controller;
 
 import com.altimetrik.ee.demo.bean.PairedComponentDetailsBean;
 import com.altimetrik.ee.demo.service.ComponentDetailsService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +27,15 @@ public class ServiceController {
 	private ComponentDetailsService componentDetailsService;
 
 	@GetMapping(value = "/")
-	@ApiOperation(value = "Get service name and identifier", notes = "Get service details and its corresponding values for all paired services", response = PairedComponentDetailsBean.class)
-	public PairedComponentDetailsBean findAll() {
+	@Operation(
+			summary = "Get service name and identifier",
+			description = "Retrieve service details and corresponding values for all paired services",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Service details retrieved successfully",
+							content = @Content(schema = @Schema(implementation = PairedComponentDetailsBean.class))),
+					@ApiResponse(responseCode = "500", description = "Internal server error")
+			}
+	)	public PairedComponentDetailsBean findAll() {
 		return componentDetailsService.findAll(this.applicationName);
 	}
 
