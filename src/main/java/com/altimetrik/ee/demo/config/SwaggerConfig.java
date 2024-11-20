@@ -1,68 +1,46 @@
 package com.altimetrik.ee.demo.config;
 
-import com.google.common.base.Predicates;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.Contact;
-import springfox.documentation.service.SecurityReference;
-import springfox.documentation.service.Tag;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
 
-	@Bean
-	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2)//
-				.select()//
-				.apis(RequestHandlerSelectors.any())//
-				.paths(Predicates.not((com.google.common.base.Predicate<String>) PathSelectors.regex("/error")))//
-				.build()//
-				.apiInfo(metaData())//
-				.useDefaultResponseMessages(false)//
-				.securitySchemes(Collections.singletonList(apiKey()))
-				.securityContexts(Collections.singletonList(securityContext()))
-				.tags(new Tag("users", "Operations about users"))//
-				.genericModelSubstitutes(Optional.class);
+  @Bean
+  public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+        .info(apiInfo())
+        .addSecurityItem(new SecurityRequirement().addList("Authorization"))
+        .components(
+            new io.swagger.v3.oas.models.Components()
+                .addSecuritySchemes(
+                    "Authorization",
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .name("Authorization")
+                        .in(In.HEADER)));
+  }
 
-	}
-
-	private ApiInfo metaData() {
-		return new ApiInfo("Demo Application", "Demo API Services", "2.0", "https://www.altimetrik.com/privacy-policy/",
-				new Contact("Playground", "https://playground.altimetrik.com", "pg-mgr1@altimetrik.com"),
-				"Apache License Version 2.0", "https://www.apache.org/licenses/LICENSE-2.0", Collections.emptyList());
-	}
-
-	private ApiKey apiKey() {
-		return new ApiKey("Authorization", "Authorization", "header");
-	}
-
-	private SecurityContext securityContext() {
-		return SecurityContext.builder()
-				.securityReferences(defaultAuth())
-				.forPaths(PathSelectors.any())
-				.build();
-	}
-
-	private List<SecurityReference> defaultAuth() {
-		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-		authorizationScopes[0] = authorizationScope;
-		return Arrays.asList(new SecurityReference("Authorization", authorizationScopes));
-	}
-
+  private Info apiInfo() {
+    return new Info()
+        .title("Demo Application")
+        .description("Demo API Services")
+        .version("2.0")
+        .contact(
+            new Contact()
+                .name("Playground")
+                .url("https://playground.altimetrik.com")
+                .email("pg-mgr1@altimetrik.com"))
+        .termsOfService("https://www.altimetrik.com/privacy-policy/")
+        .license(
+            new io.swagger.v3.oas.models.info.License()
+                .name("Apache License Version 2.0")
+                .url("https://www.apache.org/licenses/LICENSE-2.0"));
+  }
 }

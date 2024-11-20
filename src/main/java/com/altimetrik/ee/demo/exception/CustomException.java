@@ -6,12 +6,13 @@ public class CustomException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
-  private  String message;
-  private  HttpStatus httpStatus;
+  private String message;
+  private HttpStatus httpStatus;
 
   public CustomException() {
     super();
   }
+
   public CustomException(String message, HttpStatus httpStatus) {
     super(message);
     this.message = message;
@@ -26,5 +27,4 @@ public class CustomException extends RuntimeException {
   public HttpStatus getHttpStatus() {
     return httpStatus;
   }
-
 }

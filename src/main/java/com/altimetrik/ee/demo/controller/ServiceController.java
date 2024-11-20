@@ -18,25 +18,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/service")
 public class ServiceController {
 
-	protected static Logger logger = LoggerFactory.getLogger(ServiceController.class.getName());
+  protected static Logger logger = LoggerFactory.getLogger(ServiceController.class.getName());
 
-	@Value("${spring.application.name}")
-	private String applicationName;
+  @Value("${spring.application.name}")
+  private String applicationName;
 
-	@Autowired
-	private ComponentDetailsService componentDetailsService;
+  @Autowired private ComponentDetailsService componentDetailsService;
 
-	@GetMapping(value = "/")
-	@Operation(
-			summary = "Get service name and identifier",
-			description = "Retrieve service details and corresponding values for all paired services",
-			responses = {
-					@ApiResponse(responseCode = "200", description = "Service details retrieved successfully",
-							content = @Content(schema = @Schema(implementation = PairedComponentDetailsBean.class))),
-					@ApiResponse(responseCode = "500", description = "Internal server error")
-			}
-	)	public PairedComponentDetailsBean findAll() {
-		return componentDetailsService.findAll(this.applicationName);
-	}
-
+  @GetMapping(value = "/")
+  @Operation(
+      summary = "Get service name and identifier",
+      description = "Retrieve service details and corresponding values for all paired services",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Service details retrieved successfully",
+            content =
+                @Content(schema = @Schema(implementation = PairedComponentDetailsBean.class))),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  public PairedComponentDetailsBean findAll() {
+    return componentDetailsService.findAll(this.applicationName);
+  }
 }
