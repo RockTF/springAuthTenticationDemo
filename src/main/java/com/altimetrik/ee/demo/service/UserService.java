@@ -4,6 +4,7 @@ import com.altimetrik.ee.demo.entity.User;
 import com.altimetrik.ee.demo.exception.CustomException;
 import com.altimetrik.ee.demo.repository.UserRepository;
 import com.altimetrik.ee.demo.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,30 +13,26 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @Service
 public class UserService {
 
-  @Autowired
-  private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+  @Autowired private PasswordEncoder passwordEncoder;
 
-  @Autowired
-  private JwtTokenProvider jwtTokenProvider;
+  @Autowired private JwtTokenProvider jwtTokenProvider;
 
-  @Autowired
-  private AuthenticationManager authenticationManager;
+  @Autowired private AuthenticationManager authenticationManager;
 
   public String signIn(String username, String password) {
     try {
       User user = getUserByName(username);
-      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(username, password));
       return jwtTokenProvider.createToken(username, user.getRoles());
     } catch (AuthenticationException e) {
-      throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new CustomException(
+          "Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
@@ -49,8 +46,6 @@ public class UserService {
     }
   }
 
-
-
   public User search(String username) {
     User user = getUserByName(username);
     if (user == null) {
@@ -60,8 +55,9 @@ public class UserService {
   }
 
   public User findCurrentUser(HttpServletRequest req) {
-    return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)))
-            .orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
+    return userRepository
+        .findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)))
+        .orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
   }
 
   public String refresh(String username) {
@@ -70,7 +66,8 @@ public class UserService {
   }
 
   private User getUserByName(String username) {
-    return userRepository.findByUsername(username).orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
+    return userRepository
+        .findByUsername(username)
+        .orElseThrow(() -> new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND));
   }
-
 }

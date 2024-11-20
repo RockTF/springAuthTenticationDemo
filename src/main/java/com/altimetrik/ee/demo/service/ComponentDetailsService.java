@@ -6,8 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ComponentDetailsService {
 
-	boolean createComponentDetails(final String applicationName);
+  boolean createComponentDetails(final String applicationName);
 
-	PairedComponentDetailsBean findAll(final String applicationName);
-
+  PairedComponentDetailsBean findAll(final String applicationName);
 }
