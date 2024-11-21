@@ -5,8 +5,6 @@ import com.altimetrik.ee.demo.entity.ComponentDetailsEntity;
 import com.altimetrik.ee.demo.repository.ComponentDetailsRepository;
 import com.altimetrik.ee.demo.service.ComponentDetailsService;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,9 +12,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ComponentDetailsServiceImpl implements ComponentDetailsService {
-
-  protected static Logger logger =
-      LoggerFactory.getLogger(ComponentDetailsServiceImpl.class.getName());
 
   @Value("${spring.application.name}")
   private String applicationName;
@@ -33,12 +28,11 @@ public class ComponentDetailsServiceImpl implements ComponentDetailsService {
   }
 
   @Override
-  public boolean createComponentDetails(final String applicationName) {
+  public void createComponentDetails(final String applicationName) {
     if (this.componentDetailsRepository.findByComponentName(applicationName) == null) {
       this.componentDetailsRepository.save(
           new ComponentDetailsEntity(applicationName, UUID.randomUUID().toString()));
     }
-    return true;
   }
 
   @Scheduled(cron = "${cron.component.identifier.reg-ex}")
