@@ -5,8 +5,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@ToString
+@EqualsAndHashCode
 public class UserResponseDTO {
 
   @Schema(description = "Unique identifier of the user", example = "1")

@@ -1,7 +1,7 @@
 package com.altimetrik.ee.demo.security;
 
 import com.altimetrik.ee.demo.security.exceptionhandrel.CustomAccessDeniedHandler;
-import com.altimetrik.ee.demo.security.exceptionhandrel.RestAuthenticationEntryPoint;
+import com.altimetrik.ee.demo.security.exceptionhandrel.CustomBasicAuthenticationEntryPoint;
 import com.altimetrik.ee.demo.security.filter.CsrfCookieFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 @Configuration
 public class WebSecurityConfig {
 
-  @Autowired RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+  @Autowired CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,24 +30,23 @@ public class WebSecurityConfig {
         csrfConfig ->
             csrfConfig
                 .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                .ignoringRequestMatchers("/contact", "/register")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
     http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
     http.sessionManagement(
         sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     http.exceptionHandling(
-        exceptions -> exceptions.authenticationEntryPoint(restAuthenticationEntryPoint));
+        exceptions -> exceptions.authenticationEntryPoint(customBasicAuthenticationEntryPoint));
 
     http.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
         .authorizeHttpRequests(
             (requests) ->
                 requests
-                    .requestMatchers("/users/{username}")
+                    .requestMatchers("/service")
                     .hasRole("ADMIN")
+                    .requestMatchers("/users/{username}")
+                    .hasAnyRole("ADMIN", "USER")
                     .requestMatchers(
-                        "/users/signin",
-                        "/users/signup",
                         "/h2-console/**/**",
                         "/h2-console/**",
                         "/v2/api-docs",
@@ -57,7 +56,9 @@ public class WebSecurityConfig {
                         "/webjars/**",
                         "/public",
                         "/h2-console/**")
-                    .permitAll());
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated());
 
     http.oauth2ResourceServer(
         rsc ->

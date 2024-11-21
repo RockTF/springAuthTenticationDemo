@@ -5,28 +5,39 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 public class KeycloakRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
-  /**
-   * @param source the source object to convert, which must be an instance of {@code S} (never
-   *     {@code null})
-   */
+
+  private static final Logger logger = LoggerFactory.getLogger(KeycloakRoleConverter.class);
+
   @Override
   public Collection<GrantedAuthority> convert(Jwt source) {
-    Map<String, Object> realmAccess = (Map<String, Object>) source.getClaims().get("realm_access");
-    if (realmAccess == null || realmAccess.isEmpty()) {
+    Object realmAccessObj = source.getClaims().get("realm_access");
+    if (!(realmAccessObj instanceof Map<?, ?> realmAccess)) {
+      logger.warn("No realm_access claim found in JWT");
       return new ArrayList<>();
     }
-    Collection<GrantedAuthority> returnValue =
-        ((List<String>) realmAccess.get("roles"))
-            .stream()
-                .map(roleName -> "ROLE_" + roleName)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    return returnValue;
+
+    Object rolesObj = realmAccess.get("roles");
+    if (!(rolesObj instanceof List<?> roles)) {
+      logger.warn("No roles found in realm_access claim");
+      return new ArrayList<>();
+    }
+
+    Collection<GrantedAuthority> authorities =
+        roles.stream()
+            .filter(role -> role instanceof String)
+            .map(role -> "ROLE_" + role)
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
+
+    logger.info("Converted roles: {}", authorities);
+    return authorities;
   }
 }

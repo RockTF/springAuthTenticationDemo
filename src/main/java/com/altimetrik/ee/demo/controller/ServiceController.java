@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +20,6 @@ public class ServiceController {
 
   @Autowired private ComponentDetailsService componentDetailsService;
 
-  @GetMapping(value = "/")
   @Operation(
       summary = "Get service name and identifier",
       description = "Retrieve service details and corresponding values for all paired services",
@@ -34,6 +32,8 @@ public class ServiceController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
       })
   public PairedComponentDetailsBean findAll() {
-    return componentDetailsService.findAll(this.applicationName);
+    System.out.println("Method findAll() is invoked"); // Додано для діагностики
+    String name = (this.applicationName != null) ? this.applicationName : "DefaultServiceName";
+    return componentDetailsService.findAll(name);
   }
 }

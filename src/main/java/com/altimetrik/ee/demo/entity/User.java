@@ -5,9 +5,13 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
+@ToString
+@EqualsAndHashCode
 @Table(name = "user")
 public class User {
   @Id
