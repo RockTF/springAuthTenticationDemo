@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.altimetrik.ee.demo.dto.UserResponseDTO;
 import com.altimetrik.ee.demo.entity.Role;
 import com.altimetrik.ee.demo.entity.User;
-import com.altimetrik.ee.demo.exception.GlobalExceptionHandlerController;
 import com.altimetrik.ee.demo.service.UserService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,19 +32,16 @@ class UserControllerTest {
 
     @BeforeEach
   void setUp() {
-    // Create mock user
         User mockUser = new User();
     mockUser.setUsername("testUser");
     mockUser.setEmail("test.user@example.com");
 
-    // Create mock DTO
         UserResponseDTO mockUserResponseDTO = new UserResponseDTO();
     mockUserResponseDTO.setId(1);
     mockUserResponseDTO.setUsername("testUser");
     mockUserResponseDTO.setEmail("test.user@example.com");
     mockUserResponseDTO.setRoles(List.of(Role.ROLE_ADMIN, Role.ROLE_USER));
 
-    // Mock service and mapping behavior
     when(userService.search("testUser")).thenReturn(mockUser);
     when(modelMapper.map(mockUser, UserResponseDTO.class)).thenReturn(mockUserResponseDTO);
   }
