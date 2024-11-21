@@ -22,14 +22,16 @@ public class PairedComponentDetailsBean extends ComponentDetailsBean {
       final String componentIdentifier,
       final List<ComponentDetailsBean> pairedComponentDetails) {
     super(componentName, componentIdentifier);
-    this.pairedComponentDetails = pairedComponentDetails;
+    // Defensive copy
+    this.pairedComponentDetails = copyList(pairedComponentDetails);
   }
 
   public PairedComponentDetailsBean(
       final ComponentDetailsBean componentDetails,
       final List<ComponentDetailsBean> pairedComponentDetails) {
     super(componentDetails.getComponentName(), componentDetails.getComponentIdentifier());
-    this.pairedComponentDetails = pairedComponentDetails;
+    // Defensive copy
+    this.pairedComponentDetails = copyList(pairedComponentDetails);
   }
 
   // Getter with defensive copy

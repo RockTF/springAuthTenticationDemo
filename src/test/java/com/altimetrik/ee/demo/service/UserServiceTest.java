@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 import com.altimetrik.ee.demo.entity.Role;
 import com.altimetrik.ee.demo.entity.User;
 import com.altimetrik.ee.demo.repository.UserRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserServiceTest {
   private static final String TOKEN_RESPONSE = "dummyToken";

@@ -9,11 +9,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @SpringBootApplication
 @EnableWebSecurity
-@EnableMethodSecurity(jsr250Enabled = true,securedEnabled = true)
+@EnableMethodSecurity(jsr250Enabled = true, securedEnabled = true)
 public class Application {
 
-    public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+  public static void main(String[] args) {
+    ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
     context
         .getBean(ComponentDetailsService.class)
         .createComponentDetails(context.getEnvironment().getProperty("spring.application.name"));

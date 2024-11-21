@@ -2,6 +2,7 @@ package com.altimetrik.ee.demo.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -28,4 +29,12 @@ public class User {
   @Enumerated(EnumType.STRING)
   @Column(name = "role")
   List<Role> roles;
+
+  public List<Role> getRoles() {
+    return roles == null ? null : new ArrayList<>(roles);
+  }
+
+  public void setRoles(List<Role> roles) {
+    this.roles = roles == null ? null : new ArrayList<>(roles);
+  }
 }

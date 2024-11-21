@@ -23,22 +23,29 @@ public class WebSecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
     jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
-    CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+    CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler =
+        new CsrfTokenRequestAttributeHandler();
 
-    http.csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-            .ignoringRequestMatchers("/contact", "/register")
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+    http.csrf(
+        csrfConfig ->
+            csrfConfig
+                .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                .ignoringRequestMatchers("/contact", "/register")
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
     http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
-    http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-    http.exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(restAuthenticationEntryPoint));
+    http.sessionManagement(
+        sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.exceptionHandling(
+        exceptions -> exceptions.authenticationEntryPoint(restAuthenticationEntryPoint));
 
     http.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
         .authorizeHttpRequests(
             (requests) ->
                 requests
-                        .requestMatchers("/users/{username}").hasRole("ADMIN")
-                        .requestMatchers(
+                    .requestMatchers("/users/{username}")
+                    .hasRole("ADMIN")
+                    .requestMatchers(
                         "/users/signin",
                         "/users/signup",
                         "/h2-console/**/**",
@@ -49,10 +56,14 @@ public class WebSecurityConfig {
                         "/configuration/**",
                         "/webjars/**",
                         "/public",
-                        "/h2-console/**").permitAll()
-        );
+                        "/h2-console/**")
+                    .permitAll());
 
-    http.oauth2ResourceServer(rsc -> rsc.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+    http.oauth2ResourceServer(
+        rsc ->
+            rsc.jwt(
+                jwtConfigurer ->
+                    jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
     http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
     return http.build();
