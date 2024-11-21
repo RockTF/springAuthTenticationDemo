@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/service")
 public class ServiceController {
 
-  protected static Logger logger = LoggerFactory.getLogger(ServiceController.class.getName());
-
   @Value("${spring.application.name}")
   private String applicationName;
 
