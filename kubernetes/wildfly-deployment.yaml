@@ -27,17 +27,6 @@ spec:
           volumeMounts:
             - name: mysql-driver
               mountPath: /mnt
-        - name: replace-standalone-xml
-          image: busybox
-          command:
-            - sh
-            - -c
-            - >
-              cp /config/standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
-          volumeMounts:
-            - name: wildfly-config
-              mountPath: /config/standalone.xml
-              subPath: standalone.xml
       containers:
         - name: wildfly
           image: jboss/wildfly:latest
@@ -61,16 +50,16 @@ spec:
               subPath: standalone.xml
           livenessProbe:
             httpGet:
-              path: /health
+              path: /
               port: 8080
             initialDelaySeconds: 120  # Збільшений час очікування
-            periodSeconds: 20        # Менша частота перевірок
+            periodSeconds: 20         # Менша частота перевірок
           readinessProbe:
             httpGet:
               path: /
               port: 8080
             initialDelaySeconds: 150  # Додатковий час для повного запуску сервісу
-            periodSeconds: 20        # Перевірка кожні 20 секунд
+            periodSeconds: 20         # Перевірка кожні 20 секунд
       volumes:
         - name: mysql-driver
           persistentVolumeClaim:
