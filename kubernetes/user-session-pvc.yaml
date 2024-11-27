@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-session-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce  # Тип доступа должен соответствовать PV
+  resources:
+    requests:
+      storage: 1Gi  # Размер запрашиваемого хранилища
+  storageClassName: standard  # StorageClass для привязки к PV
+  volumeName: user-session-pv  # Явная привязка к PV

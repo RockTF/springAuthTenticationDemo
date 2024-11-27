@@ -24,3 +24,4 @@ spec:
               value: eazybank
           ports:
             - containerPort: 3306
+

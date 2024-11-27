@@ -27,7 +27,15 @@ spec:
           ports:
             - containerPort: 8180
             - containerPort: 9991
+          volumeMounts:
+            - name: mysql-driver
+              mountPath: /mnt
+            - name: user-session-storage
+              mountPath: /app/data/sessions
       volumes:
         - name: mysql-driver
           persistentVolumeClaim:
             claimName: mysql-connector-pvc
+        - name: user-session-storage
+          persistentVolumeClaim:
+            claimName: user-session-pvc

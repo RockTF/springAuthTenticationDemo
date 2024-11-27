@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: user-session-pv
+spec:
+  capacity:
+    storage: 1Gi  # Максимальный размер PersistentVolume
+  accessModes:
+    - ReadWriteOnce  # Доступ для записи/чтения только с одного Pod
+  storageClassName: standard  # Указан StorageClass для соответствия PVC
+  hostPath:
+    path: /var/local/user-sessions  # Абсолютный путь на узле для сохранения данных
