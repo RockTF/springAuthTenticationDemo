@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wildfly
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wildfly
+  template:
+    metadata:
+      labels:
+        app: wildfly
+    spec:
+      initContainers:
+        - name: setup-mysql-driver
+          image: busybox
+          command: ['sh', '-c']
+          args:
+            - mkdir -p /opt/jboss/wildfly/modules/com/mysql/main && cp /mnt/mysql-connector-j-9.1.0.jar /opt/jboss/wildfly/modules/com/mysql/main/ && echo '<?xml version="1.0" encoding="UTF-8"?><module xmlns="urn:jboss:module:1.1" name="com.mysql"><resources><resource-root path="mysql-connector-j-9.1.0.jar"/></resources><dependencies><module name="javax.api"/><module name="javax.transaction.api"/></dependencies></module>' > /opt/jboss/wildfly/modules/com/mysql/main/module.xml
+          volumeMounts:
+            - name: mysql-driver
+              mountPath: /mnt
+      containers:
+        - name: wildfly
+          image: jboss/wildfly:latest
+          ports:
+            - containerPort: 8180
+            - containerPort: 9991
+      volumes:
+        - name: mysql-driver
+          persistentVolumeClaim:
+            claimName: mysql-connector-pvc

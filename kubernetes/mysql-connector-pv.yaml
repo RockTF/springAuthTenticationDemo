@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-connector-pv
+spec:
+  capacity:
+    storage: 1Gi  # Максимальний розмір цього PersistentVolume
+  accessModes:
+    - ReadWriteOnce  # Обмежений доступ для запису/читання тільки з одного Pod
+  storageClassName: standard  # Додано StorageClass для узгодження з PVC
+  hostPath:
+    path: /var/local/mysql-connector  # Абсолютний шлях до JAR-файлу на вузлі
