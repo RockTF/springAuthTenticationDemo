@@ -6,6 +6,12 @@ metadata:
     app: mysql
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: mysql
@@ -24,4 +30,23 @@ spec:
               value: eazybank
           ports:
             - containerPort: 3306
-
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - "-h"
+                - "127.0.0.1"
+            initialDelaySeconds: 60  # Більше часу для запуску сервера
+            periodSeconds: 20        # Зменшено частоту перевірок
+          readinessProbe:
+            exec:
+              command:
+                - mysql
+                - "-uroot"
+                - "-proot"
+                - "-e"
+                - "SELECT 1"
+            initialDelaySeconds: 90  # Додатковий час для повного старту MySQL
+            periodSeconds: 20        # Перевірка кожні 20 секунд
+            timeoutSeconds: 5

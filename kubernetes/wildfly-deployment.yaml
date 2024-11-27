@@ -4,6 +4,12 @@ metadata:
   name: wildfly
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: wildfly
@@ -21,17 +27,50 @@ spec:
           volumeMounts:
             - name: mysql-driver
               mountPath: /mnt
+        - name: replace-standalone-xml
+          image: busybox
+          command:
+            - sh
+            - -c
+            - >
+              cp /config/standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
+          volumeMounts:
+            - name: wildfly-config
+              mountPath: /config/standalone.xml
+              subPath: standalone.xml
       containers:
         - name: wildfly
           image: jboss/wildfly:latest
           ports:
-            - containerPort: 8180
-            - containerPort: 9991
+            - containerPort: 8080
+            - containerPort: 9990
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
           volumeMounts:
             - name: mysql-driver
               mountPath: /mnt
             - name: user-session-storage
               mountPath: /app/data/sessions
+            - name: wildfly-config
+              mountPath: /opt/jboss/wildfly/standalone/configuration/standalone.xml
+              subPath: standalone.xml
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 120  # Збільшений час очікування
+            periodSeconds: 20        # Менша частота перевірок
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 150  # Додатковий час для повного запуску сервісу
+            periodSeconds: 20        # Перевірка кожні 20 секунд
       volumes:
         - name: mysql-driver
           persistentVolumeClaim:
@@ -39,3 +78,6 @@ spec:
         - name: user-session-storage
           persistentVolumeClaim:
             claimName: user-session-pvc
+        - name: wildfly-config
+          configMap:
+            name: wildfly-config
